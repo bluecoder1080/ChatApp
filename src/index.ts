@@ -7,14 +7,19 @@ let allSockets = [];
 
 wss.on("connection", (socket) => {
   allSockets.push(socket);
+
   console.log("User Connected");
   userCount++;
   console.log("User Connected #" + userCount);
 
   socket.on("message", (message) => {
     console.log("messaged Recieved  " + message.toString());
-    setTimeout(() => {
-      socket.send(message.toString() + " Sent from The Server .");
-    }, 1000);
+
+    for (let i = 0; i < allSockets.length; i++) {
+      const s = allSockets[i];
+     
+      s?.send(message.toString() + " sent from the server");
+    }
+   
   });
 });
