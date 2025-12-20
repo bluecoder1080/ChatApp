@@ -24,7 +24,13 @@ wss.on("connection", (socket) => {
       //if its is present then send message to everyone
       allSockets.forEach((user) => {
         if (user.room === currentUser.room) {
-          user.socket.send(parsedMessage.payload.message);
+          user.socket.send(
+            JSON.stringify({
+              type: "chat",
+              room: currentUser.room,
+              message: parsedMessage.payload.message,
+            })
+          );
         }
       });
     }
