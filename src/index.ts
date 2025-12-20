@@ -17,5 +17,16 @@ wss.on("connection", (socket) => {
         room: parsedMessage.payload.roomId,
       });
     }
+
+    if (parsedMessage.type == "chat") {
+      const currentUser = allSockets.find((x) => x.socket === socket); // If the Current user socket is present or not .
+      if (!currentUser) return;
+      //if its is present then send message to everyone
+      allSockets.forEach((user) => {
+        if (user.room === currentUser.room) {
+          user.socket.send(parsedMessage.payload.message);
+        }
+      });
+    }
   });
 });
