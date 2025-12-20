@@ -6,26 +6,16 @@ interface User {
   room: string;
 }
 
-let userCount = 0;
 let allSockets: User[] = [];
 
 wss.on("connection", (socket) => {
-  allSockets.push(socket);
-
-  console.log("User Connected");
-  userCount++;
-  console.log("User Connected #" + userCount);
-
   socket.on("message", (message) => {
-    console.log("messaged Recieved  " + message.toString());
-
-    for (let i = 0; i < allSockets.length; i++) {
-      const s = allSockets[i];
-
-      s?.send(message.toString() + " sent from the server");
+    const parsedMessage = JSON.parse(message as unknown as string);
+    if (parsedMessage.type == "join") {
+      allSockets.push({
+        socket,
+        room: parsedMessage.payload.roomId,
+      });
     }
-    socket.on("disconnect", () => {
-      allSockets = allSockets.filter((x) => x != socket);
-    });
   });
 });
