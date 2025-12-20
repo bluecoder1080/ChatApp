@@ -35,4 +35,7 @@ wss.on("connection", (socket) => {
       });
     }
   });
+   socket.on("close", () => {
+    allSockets = allSockets.filter(u => u.socket !== socket);
+  });
 });
