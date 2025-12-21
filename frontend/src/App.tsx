@@ -1,89 +1,118 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
+import ChatHeader from "./components/ChatHeader";
+import MessageList from "./components/MessageList";
+import MessageInput from "./components/MessageInput";
+
+interface Message {
+  id: number;
+  text: string;
+  sender: "me" | "other";
+}
 
 function App() {
-  const [messages, setMessages] = useState(["Hi There"]);
- const wsRef = useRef<WebSocket | null>(null);
-
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [roomId, setRoomId] = useState("");
+  const [currentRoom, setCurrentRoom] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    if (!currentRoom) return;
+
     const ws = new WebSocket("ws://localhost:8080");
+    wsRef.current = ws;
+
     ws.onopen = () => {
+      console.log("WebSocket connected");
       ws.send(
-        JSON.stringify({
-          type: "join",
-          payload: {
-            roomId: "red",
-          },
-        })
+        JSON.stringify({ type: "join", payload: { roomId: currentRoom } })
       );
+      setIsConnected(true);
     };
 
- ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "chat") {
+        const newMessage: Message = {
+          id: Date.now(),
+          text: data.message,
+          sender: "other",
+        };
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      }
+    };
 
-  if (data.type === "chat") {
-    setMessages((m) => [...m, data.message]);
-  }
-};
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+      setIsConnected(false);
+    };
 
+    return () => {
+      ws.close();
+    };
+  }, [currentRoom]);
 
-    wsRef.current = ws;
-    
-  }, []);
-  return (
-    <>
-      <div className="h-screen bg-black flex flex-col text-white">
-        {/* <!-- Header --> */}
-        <div className="px-6 py-4 border-b border-gray-800 text-lg font-semibold">
-          Live Chat
-        </div>
+  const handleJoinRoom = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (roomId.trim()) {
+      setCurrentRoom(roomId.trim());
+      setMessages([]);
+    }
+  };
 
-        {/* <!-- Messages Area --> */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3 bg-black">
-          {messages.map((message) => (
-            <div className="max-w-[70%] bg-gray-800 px-4 py-2 rounded-lg">
-              {message}
-            </div>
-          ))}
+  const handleSendMessage = (message: string) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: "chat",
+          payload: { message },
+        })
+      );
+      const newMessage: Message = {
+        id: Date.now(),
+        text: message,
+        sender: "me",
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    }
+  };
 
-          <div className="max-w-[70%] bg-blue-700 px-4 py-2 rounded-lg ml-auto">
-            Hi, this looks clean!
-          </div>
-        </div>
-
-        {/* <!-- Broadcaster Style Input --> */}
-        <div className="border-t border-gray-800 bg-black px-4 py-3">
-          <div className="flex items-center gap-3 bg-gray-900 rounded-xl px-4 py-2">
+  if (!currentRoom) {
+    return (
+      <div className="h-screen bg-black flex items-center justify-center text-white">
+        <div className="bg-gray-900 p-8 rounded-lg shadow-lg w-96">
+          <h1 className="text-2xl font-bold mb-6 text-center">
+            Join Chat Room
+          </h1>
+          <form onSubmit={handleJoinRoom}>
             <input
-              id="input_box"
               type="text"
-              placeholder="Send a message..."
-              className="flex-1 bg-transparent text-white placeholder-gray-400 
-               focus:outline-none"
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+              placeholder="Enter room name..."
+              className="w-full px-4 py-3 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 mb-4"
+              autoFocus
             />
-
             <button
-              onClick={() => {
-                const message = document.getElementById("input_box")?.value;
-                wsRef.current?.send(
-                  JSON.stringify({
-                    type : "chat",
-                    payload : {
-                      message: message,
-                    },
-                  })
-                );
-              }}
-              className="px-5 py-2 rounded-lg bg-blue-600 text-white font-medium
-               hover:bg-blue-700 active:scale-95 transition"
+              type="submit"
+              className="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-gray-600"
+              disabled={!roomId.trim()}
             >
-              Send
+              Join Room
             </button>
-          </div>
+          </form>
         </div>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="h-screen bg-black flex flex-col text-white font-sans">
+      <ChatHeader roomName={currentRoom} isConnected={isConnected} />
+      <MessageList messages={messages} />
+      <MessageInput onSendMessage={handleSendMessage} />
+    </div>
   );
 }
 

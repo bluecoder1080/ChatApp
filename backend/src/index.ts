@@ -19,11 +19,11 @@ wss.on("connection", (socket) => {
     }
 
     if (parsedMessage.type == "chat") {
-      const currentUser = allSockets.find((x) => x.socket === socket); // If the Current user socket is present or not .
+      const currentUser = allSockets.find((x) => x.socket === socket);
       if (!currentUser) return;
-      //if its is present then send message to everyone
+      //send message to everyone except the sender
       allSockets.forEach((user) => {
-        if (user.room === currentUser.room) {
+        if (user.room === currentUser.room && user.socket !== socket) {
           user.socket.send(
             JSON.stringify({
               type: "chat",
@@ -35,7 +35,7 @@ wss.on("connection", (socket) => {
       });
     }
   });
-   socket.on("close", () => {
-    allSockets = allSockets.filter(u => u.socket !== socket);
+  socket.on("close", () => {
+    allSockets = allSockets.filter((u) => u.socket !== socket);
   });
 });
