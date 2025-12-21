@@ -2,6 +2,8 @@
 
 A real-time chat application built with WebSocket, React, TypeScript, and Tailwind CSS.
 
+![Front Page](./frontend/public/Front_Page.png)
+
 ## Features
 
 - 💬 **Real-time messaging** - Instant message delivery using WebSocket
@@ -10,6 +12,10 @@ A real-time chat application built with WebSocket, React, TypeScript, and Tailwi
 - ✍️ **Typing indicators** - Know when someone is typing
 - 🎨 **Modern UI** - Beautiful gradient design with smooth animations
 - ⚡ **Lightweight** - Minimal dependencies, fast performance
+
+### Typing Feature in Action
+
+![Typing Feature](./frontend/public/Typing_Feature.png)
 
 ## Tech Stack
 
@@ -38,8 +44,8 @@ A real-time chat application built with WebSocket, React, TypeScript, and Tailwi
 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
-cd Chat-App(SocketIo)
+git clone https://github.com/bluecoder1080/ChatApp.git
+cd ChatApp
 ```
 
 2. Install backend dependencies
@@ -129,5 +135,7 @@ Chat-App(SocketIo)/
 MIT
 
 ## Author
+
+**Made by Aditya**
 
 Built with ❤️ using React and WebSocket
