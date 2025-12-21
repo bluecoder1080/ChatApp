@@ -1,8 +1,11 @@
 import { WebSocketServer, WebSocket } from "ws";
 import http from "http";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Use PORT from environment for Render, default to 8080 locally
-const PORT = Number(process.env.PORT || 8080);
+const PORT = Number(process.env.PORT ?? 8080);
 
 // Create an HTTP server so Render can health check and proxy WebSocket upgrades
 const server = http.createServer((req, res) => {
@@ -83,13 +86,6 @@ wss.on("connection", (socket) => {
     allSockets = allSockets.filter((u) => u.socket !== socket);
     if (room) broadcastUserCount(room);
   });
-});
-
-// 🔑 THIS IS THE LINE YOU ASKED ABOUT
-const port = process.env.PORT || 8080;
-
-server.listen(port, () => {
-  console.log(`Server running on port ${port}`);
 });
 
 // Start the HTTP server

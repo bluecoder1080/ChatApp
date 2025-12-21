@@ -85,3 +85,20 @@ MIT
 **Made by Aditya**
 
 Built with ❤️ using React and WebSocket
+
+## Environment Variables
+
+- **Backend `PORT`:** In production (Render), `PORT` is provided automatically. For local development, copy `backend/.env.example` to `backend/.env` and set `PORT=8080` (or your preferred port). Env vars are available via `process.env` in the code.
+- **Render Dashboard:** Go to your service → Environment → Add Environment Variable. You can also use "Add from .env" to bulk import a local `.env` file. The repo includes `backend/.env.example` for safe sharing; do not commit real secrets.
+- **Configuration-as-code:** `render.yaml` supports `envVars`. This project sets `NODE_ENV=production` there; you can add more keys as needed.
+
+### Quick Commands
+
+```
+# Install backend deps and build
+npm install --prefix backend && npm run --prefix backend build
+
+# Local dev: use .env
+copy backend\.env.example backend\.env
+npm run --prefix backend start
+```
