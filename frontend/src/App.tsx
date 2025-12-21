@@ -18,7 +18,6 @@ function App() {
   const [userCount, setUserCount] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!currentRoom) return;
@@ -27,7 +26,6 @@ function App() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("WebSocket connected");
       ws.send(
         JSON.stringify({ type: "join", payload: { roomId: currentRoom } })
       );
@@ -53,7 +51,6 @@ function App() {
     };
 
     ws.onclose = () => {
-      console.log("WebSocket disconnected");
       setIsConnected(false);
     };
 

@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 
 const wss = new WebSocketServer({ port: 8080 });
+
 interface User {
   socket: WebSocket;
   room: string;
@@ -21,7 +22,7 @@ wss.on("connection", (socket) => {
   socket.on("message", (message) => {
     const parsedMessage = JSON.parse(message as unknown as string);
 
-    if (parsedMessage.type == "join") {
+    if (parsedMessage.type === "join") {
       allSockets.push({
         socket,
         room: parsedMessage.payload.roomId,
@@ -29,7 +30,7 @@ wss.on("connection", (socket) => {
       broadcastUserCount(parsedMessage.payload.roomId);
     }
 
-    if (parsedMessage.type == "chat") {
+    if (parsedMessage.type === "chat") {
       const currentUser = allSockets.find((x) => x.socket === socket);
       if (!currentUser) return;
       allSockets.forEach((user) => {
@@ -37,7 +38,6 @@ wss.on("connection", (socket) => {
           user.socket.send(
             JSON.stringify({
               type: "chat",
-              room: currentUser.room,
               message: parsedMessage.payload.message,
             })
           );
@@ -45,7 +45,7 @@ wss.on("connection", (socket) => {
       });
     }
 
-    if (parsedMessage.type == "typing") {
+    if (parsedMessage.type === "typing") {
       const currentUser = allSockets.find((x) => x.socket === socket);
       if (!currentUser) return;
       allSockets.forEach((user) => {
