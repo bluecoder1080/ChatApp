@@ -1,6 +1,22 @@
 import { WebSocketServer, WebSocket } from "ws";
+import http from "http";
 
-const wss = new WebSocketServer({ port: 8080 });
+// Use PORT from environment for Render, default to 8080 locally
+const PORT = Number(process.env.PORT || 8080);
+
+// Create an HTTP server so Render can health check and proxy WebSocket upgrades
+const server = http.createServer((req, res) => {
+  if (req.url === "/health") {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("OK");
+    return;
+  }
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Chat backend running");
+});
+
+// Attach WebSocket server to the HTTP server
+const wss = new WebSocketServer({ server });
 
 interface User {
   socket: WebSocket;
@@ -67,4 +83,16 @@ wss.on("connection", (socket) => {
     allSockets = allSockets.filter((u) => u.socket !== socket);
     if (room) broadcastUserCount(room);
   });
+});
+
+// 🔑 THIS IS THE LINE YOU ASKED ABOUT
+const port = process.env.PORT || 8080;
+
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
+// Start the HTTP server
+server.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
 });

@@ -7,7 +7,7 @@ interface MessageInputProps {
 
 const MessageInput = ({ onSendMessage, onTyping }: MessageInputProps) => {
   const [inputValue, setInputValue] = useState("");
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSend = () => {
     if (inputValue.trim()) {

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: chat-backend
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: node dist/index.js
+    autoDeploy: true
+    healthCheckPath: /health
+    rootDir: backend

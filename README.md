@@ -41,67 +41,13 @@ A real-time chat application built with WebSocket, React, TypeScript, and Tailwi
 
 ### Installation
 
-1. Clone the repository
-
-```bash
 git clone https://github.com/bluecoder1080/ChatApp.git
 cd ChatApp
-```
-
-2. Install backend dependencies
-
-```bash
-cd backend
-npm install
-```
-
-3. Install frontend dependencies
-
-```bash
-cd ../frontend
-npm install
-```
-
-### Running the Application
-
-1. Start the backend server
-
-```bash
-cd backend
-npm run dev
-```
-
-The WebSocket server will start on `ws://localhost:8080`
-
-2. Start the frontend (in a new terminal)
-
-```bash
-cd frontend
-npm run dev
-```
-
-The app will open at `http://localhost:5173`
-
-## Usage
-
-1. Open the application in your browser
-2. Enter a room name (e.g., "general", "team-chat")
-3. Click "Join Room"
-4. Start chatting!
-
-**Tip:** Open multiple browser tabs with the same room name to test multi-user chat.
-
-## Project Structure
 
 ```
-Chat-App(SocketIo)/
-├── backend/
-│   ├── src/
-│   │   └── index.ts          # WebSocket server
-│   ├── package.json
-│   └── tsconfig.json
-├── frontend/
-│   ├── src/
+## Interview Q&A
+
+The interview questions and answers have been moved to a dedicated file: [README-interview.md](README-interview.md)
 │   │   ├── components/
 │   │   │   ├── ChatHeader.tsx
 │   │   │   ├── MessageList.tsx
