@@ -15,7 +15,10 @@ function App() {
   const [roomId, setRoomId] = useState("");
   const [currentRoom, setCurrentRoom] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const [userCount, setUserCount] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!currentRoom) return;
@@ -41,6 +44,12 @@ function App() {
         };
         setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
+      if (data.type === "userCount") {
+        setUserCount(data.count);
+      }
+      if (data.type === "typing") {
+        setIsTyping(data.isTyping);
+      }
     };
 
     ws.onclose = () => {
@@ -58,6 +67,17 @@ function App() {
     if (roomId.trim()) {
       setCurrentRoom(roomId.trim());
       setMessages([]);
+    }
+  };
+
+  const handleTyping = (isTyping: boolean) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: "typing",
+          payload: { isTyping },
+        })
+      );
     }
   };
 
@@ -143,9 +163,13 @@ function App() {
 
   return (
     <div className="h-screen bg-black flex flex-col text-white font-sans">
-      <ChatHeader roomName={currentRoom} isConnected={isConnected} />
-      <MessageList messages={messages} />
-      <MessageInput onSendMessage={handleSendMessage} />
+      <ChatHeader
+        roomName={currentRoom}
+        isConnected={isConnected}
+        userCount={userCount}
+      />
+      <MessageList messages={messages} isTyping={isTyping} />
+      <MessageInput onSendMessage={handleSendMessage} onTyping={handleTyping} />
     </div>
   );
 }

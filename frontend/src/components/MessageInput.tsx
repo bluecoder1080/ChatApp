@@ -1,17 +1,34 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
+  onTyping: (isTyping: boolean) => void;
 }
 
-const MessageInput = ({ onSendMessage }: MessageInputProps) => {
+const MessageInput = ({ onSendMessage, onTyping }: MessageInputProps) => {
   const [inputValue, setInputValue] = useState("");
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSend = () => {
     if (inputValue.trim()) {
       onSendMessage(inputValue);
       setInputValue("");
+      onTyping(false);
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+    onTyping(true);
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      onTyping(false);
+    }, 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -26,7 +43,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
         <input
           type="text"
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={handleChange}
           onKeyPress={handleKeyPress}
           placeholder="Type a message..."
           className="flex-1 bg-transparent text-white placeholder-gray-500 focus:outline-none"
