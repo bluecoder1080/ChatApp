@@ -102,3 +102,15 @@ npm install --prefix backend && npm run --prefix backend build
 copy backend\.env.example backend\.env
 npm run --prefix backend start
 ```
+
+### Frontend WebSocket URL
+
+- Set `VITE_WS_URL` to your deployed backend WebSocket URL (use `wss://` for HTTPS):
+
+```
+copy frontend\.env.example frontend\.env
+# If deploying elsewhere, edit VITE_WS_URL accordingly
+```
+
+- Current default in `.env.example` points to: `wss://chatapp-backend-l53l.onrender.com/`
+- For Render Static Site, define `VITE_WS_URL` in the service Environment tab before building; Vite reads env at build time.

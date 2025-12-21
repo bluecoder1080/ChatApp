@@ -22,7 +22,10 @@ function App() {
   useEffect(() => {
     if (!currentRoom) return;
 
-    const ws = new WebSocket("ws://localhost:8080");
+    const WS_URL =
+      (import.meta as any).env?.VITE_WS_URL ||
+      "wss://chatapp-backend-l53l.onrender.com/";
+    const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
     ws.onopen = () => {
